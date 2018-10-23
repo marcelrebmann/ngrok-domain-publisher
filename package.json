@@ -1,0 +1,31 @@
+{
+  "name": "ngrok-domain-publisher",
+  "version": "0.1.0",
+  "description": "",
+  "homepage": "",
+  "author": {
+    "name": "Marcel Rebmann",
+    "email": "marcelrebmann@me.com"
+  },
+  "main": "build/index.js",
+  "keywords": [
+    "Node",
+    "Express",
+    "Typescript"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./dist/app.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.28.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "tslint": "4.3.1",
+    "typescript": "3.1.3"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
