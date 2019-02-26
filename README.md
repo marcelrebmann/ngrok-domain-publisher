@@ -9,7 +9,7 @@ This means after each restart we need to find out the new URL by looking it up e
 
 This script was written to enable automatic publishing of the URL without any interaction. 
 
-##How to start?
+## How to start?
 * Make sure to have Node.js (v10.x) and NPM installed.
 * Install dependencies via `npm install`
 * Find out in which directory your ngrok.log file is and copy the path.
@@ -17,10 +17,10 @@ This script was written to enable automatic publishing of the URL without any in
 * Build the project via `npm run build`
 * To run the script via node ./ngrok-domain-publish.js -p <PUBLISHER_NAME>
 
-####Command line args
+#### Command line args
 `-p`  : *The name of the publisher to use (e.g. telegram). Default: Logs to Console*
 
-##Writing Custom Handlers
+## Writing Custom Handlers
 To add custom logic, just add a new Publisher that extends the `GenericPublisher` Class and register it properly.
 
 1. Implement your new Publisher and save the file in the `publishers` folder.
@@ -42,7 +42,7 @@ To add custom logic, just add a new Publisher that extends the `GenericPublisher
 
 4. Add specific config properties (e.g. Access Tokens,...) to your `config.json`
 
-##Example use with systemd service
+## Example use with systemd service
 We can publish the new URL automatically after Ngrok Service has restarted.
 Just run the script in the `ExecStartPost` condition!
 ```
@@ -62,5 +62,5 @@ User=ubuntu
 WantedBy=multi-user.target
 ```
 
-##Contributing
+## Contributing
 Feel free to contribute add Pull Requests with new Handlers/Services which could be useful for others!
