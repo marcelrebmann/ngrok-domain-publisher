@@ -1,5 +1,10 @@
 export interface Config {
-    telegramBotToken: string;
-    chatId: number;
     logFileDir: string;
+    publishers: PublisherConfig;
+}
+
+export interface PublisherConfig {
+    telegramToken?: string;
+    chatId?: string;
+    [key: string]: string;
 }

@@ -1,5 +1,7 @@
 {
-  "telegramBotToken": "",
-  "chatId": 0,
-  "logFileDir": "/"
+  "logFileDir": "/var/log/ngrok.log",
+  "publishers": {
+    "telegramToken": "",
+    "chatId": ""
+  }
 }

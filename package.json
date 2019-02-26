@@ -1,7 +1,7 @@
 {
   "name": "ngrok-domain-publisher",
   "version": "0.1.0",
-  "description": "",
+  "description": "Automatically find and publish the URL of a running Ngrok instance after every restart.",
   "homepage": "",
   "author": {
     "name": "Marcel Rebmann",
@@ -11,17 +11,20 @@
   "keywords": [
     "Node",
     "Express",
-    "Typescript"
+    "Typescript",
+    "Ngrok",
+    "Ngrok.io"
   ],
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/app.js"
+    "start": "node ./dist/ngrok-domain-publish.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.28.0"
+    "node-telegram-bot-api": "^0.30.0"
   },
   "devDependencies": {
     "@types/node": "^10.12.0",
+    "@types/node-telegram-bot-api": "^0.30.4",
     "tslint": "4.3.1",
     "typescript": "3.1.3"
   },

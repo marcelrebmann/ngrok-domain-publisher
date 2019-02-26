@@ -1,16 +1,26 @@
 import {Config} from "./interfaces/config.interface";
+import {TelegramPublisher} from "./publisher/telegram-publisher";
+import {Publishers} from "./publisher/publishers";
+import {ConsolePublisher} from "./publisher/console-publisher";
+import {GenericPublisher} from "./publisher/generic-publisher";
 
 const exec = require("child_process").exec;
-const TelegramBot = require("node-telegram-bot-api");
+const handler = process.argv[3];
 const CONFIG: Config = require("../config.json");
-
-const TOKEN = CONFIG.telegramBotToken;
-const CHAT_ID = CONFIG.chatId;
 const LOG_DIR = CONFIG.logFileDir;
-const BOT = new TelegramBot(TOKEN, {polling: false});
+
+let publisher: GenericPublisher;
+
+switch (handler) {
+    case Publishers.Telegram:
+        publisher = new TelegramPublisher(CONFIG);
+        break;
+    default:
+        publisher = new ConsolePublisher(CONFIG);
+}
 
 const publishNewDomain = () => {
-    exec(`cat ${LOG_DIR} | grep -Po 'opts=\"&{Hostname:.+?.ngrok.io'`, (error: Error, stdout: string, stderr: string) => {
+    exec(`cat ${LOG_DIR} | grep -Po 'opts=\"&{Hostname:.+?.ngrok.io'`, (error: Error, stdout: string) => {
         if (error) {
             console.log(error);
             return;
@@ -18,7 +28,9 @@ const publishNewDomain = () => {
         if (stdout) {
             const domain = stdout.match(/\w+.ngrok.io\s*$/i);
             if (domain && domain.length) {
-                BOT.sendMessage(CHAT_ID, "<b>Coffestock URL changed!</b>\n\nPlease update your Remote URL in the App:\n" + domain[0], {parse_mode: "HTML"});
+                const url = domain[0];
+                publisher.publish(url);
+                return;
             }
         }
     });
