@@ -3,9 +3,9 @@
 >A simple script to find and publish the new URL under which your machine is accessible via Ngrok.<br>
 >You can add customized handler functions to specify how the new URL should be published.
 
-As you might know, a new public URL is generated every time, the Ngrok service restarts (unless you have a paid plan).
-(e.g. when your Raspberry Pi is rebooting for some reasons)
-This means after each restart we need to find out the new URL by looking it up either in the Web interface or in the service logs.
+As you might know, a new public URL is generated every time the Ngrok service restarts (unless you have a paid plan).
+E.g. when your Raspberry Pi is rebooting for some reasons.
+This means after each restart we need to find out the new URL by looking it up either on the web interface or in the service logs.
 
 This script was written to enable automatic publishing of the URL without any interaction. 
 
@@ -15,12 +15,12 @@ This script was written to enable automatic publishing of the URL without any in
 * Find out in which directory your ngrok.log file is and copy the path.
 * Fulfill the entries in `config.json` (especially the path to the log file)
 * Build the project via `npm run build`
-* To run the script via node ./ngrok-domain-publish.js -p <PUBLISHER_NAME>
+* To run the script via node, execute `./ngrok-domain-publish.js -p <PUBLISHER_NAME>`
 
 #### Command line args
 `-p`  : *The name of the publisher to use (e.g. telegram). Default: Logs to Console*
 
-## Writing Custom Handlers
+## Write custom handlers
 To add custom logic, just add a new Publisher that extends the `GenericPublisher` Class and register it properly.
 
 1. Implement your new Publisher and save the file in the `publishers` folder.
@@ -40,21 +40,21 @@ To add custom logic, just add a new Publisher that extends the `GenericPublisher
     }
     ```
 
-4. Add specific config properties (e.g. Access Tokens,...) to your `config.json`
+4. Extend `config.json` and add specific config properties (e.g. Access Tokens,...) for your handler. 
 
-## Example use with systemd service
+## Example usage with systemd service
 We can publish the new URL automatically after Ngrok Service has restarted.
-Just run the script in the `ExecStartPost` condition!
+Just run the compiled `ngrok-domain-publish.js` script in the `ExecStartPost` condition!
 ```
 // ngrok systemd service file
 [Unit]
 Description=Ngrok Domain
-Reqiures=coffeestock.service
 
 [Service]
 Type=simple
 ExecStart=/home/ubuntu/ngrok http -config=/home/ubuntu/.ngrok2/ngrok.yml 3001
-ExecStartPost=/home/ubuntu/.nvm/versions/node/v8.12.0/bin/node /home/ubuntu/ngrok-domain-publisher/dist/ngrok-domain-publish.js
+// Publish the new ngrok URL to Telegram by running the compiled ngrok-domain-publish.js via node in ExecStartPost
+ExecStartPost=/home/ubuntu/.nvm/versions/node/v8.12.0/bin/node /home/ubuntu/ngrok-domain-publisher/dist/ngrok-domain-publish.js -p telegram
 Restart=on-failure
 User=ubuntu
 
