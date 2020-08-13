@@ -34,13 +34,13 @@ This script was written to enable automatic publishing of the URL without any in
 `-p`  : *The name of the publisher (or multiple publishers) to use (e.g. telegram). Default: Logs to Console*
 ```
 # Logs to telegram.
-node ./dist/ngrok-domain-publisher.js -p telegram
+node ./dist/ngrok-domain-publish.js -p telegram
 ```
 #### Use multiple publishers
 To use more than a single publisher, just specify the publisher names comma separated after the `-p` flag:
 ```
 # Logs to console (stdout) AND to telegram.
-node ./dist/ngrok-domain-publisher.js -p stdout,telegram
+node ./dist/ngrok-domain-publish.js -p stdout,telegram
 ```
 
 ## Write custom publishers
