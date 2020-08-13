@@ -35,7 +35,7 @@ const publishTunnelDomains = () => {
         const tunnels: NgrokTunnel[] = [];
 
         for (const line of lines) {
-            const match = line.match(/name="?([^"]+)"? .+ url=https?:\/\/(.+\.ngrok\.io)$/);
+            const match = line.match(/name="?([^"]+)"? .+ url=https?:\/\/(.+\.ngrok\.io)/);
 
             if (!match || !match.length) {
                 continue;
