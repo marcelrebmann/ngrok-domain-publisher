@@ -3,37 +3,84 @@ import {TelegramPublisher} from "./publisher/telegram-publisher";
 import {Publishers} from "./publisher/publishers";
 import {ConsolePublisher} from "./publisher/console-publisher";
 import {GenericPublisher} from "./publisher/generic-publisher";
+import {NgrokTunnel} from "./interfaces/ngrok-tunnel.interface";
 
 const exec = require("child_process").exec;
-const handler = process.argv[3];
+const requestedHandlers = process.argv[3];
 const CONFIG: Config = require("../config.json");
 const LOG_DIR = CONFIG.logFileDir;
 
-let publisher: GenericPublisher;
+const publishers: GenericPublisher[] = [];
 
-switch (handler) {
-    case Publishers.Telegram:
-        publisher = new TelegramPublisher(CONFIG);
-        break;
-    default:
-        publisher = new ConsolePublisher(CONFIG);
-}
+const buildRequestedPublishers = () => {
+    if (!requestedHandlers) {
+        publishers.push(createPublisher());
+        return;
+    }
+    const handlers = requestedHandlers.split(",");
 
-const publishNewDomain = () => {
-    exec(`cat ${LOG_DIR} | grep -Po 'opts=\"&{Hostname:.+?.ngrok.io'`, (error: Error, stdout: string) => {
+    for (const handler of handlers) {
+        publishers.push(createPublisher(handler));
+    }
+};
+
+const createPublisher: (key?: string) => GenericPublisher = (key: string) => {
+    switch (key) {
+        case Publishers.Telegram:
+            return new TelegramPublisher(CONFIG);
+        case Publishers.Stdout:
+            return new ConsolePublisher(CONFIG);
+        default:
+            return new ConsolePublisher(CONFIG);
+    }
+};
+
+const publishTunnelDomains = () => {
+    exec(`cat ${LOG_DIR} | grep -Po 'msg=\"started tunnel\" obj=tunnels name=(.+) addr=.+ url=(https?:\/\/.+\.ngrok\.io)$'`, (error: Error, stdout: string) => {
         if (error) {
             console.log(error);
             return;
         }
-        if (stdout) {
-            const domain = stdout.match(/\w+.ngrok.io\s*$/i);
-            if (domain && domain.length) {
-                const url = domain[0];
-                publisher.publish(url);
-                return;
-            }
+        if (!stdout) {
+            console.log("No tunnels found.");
+            return;
         }
+        const lines = stdout.split(/\r?\n/);
+        const tunnels: NgrokTunnel[] = [];
+
+        for (const line of lines) {
+            const match = line.match(/name="?([^"]+)"? .+ url=https?:\/\/(.+\.ngrok\.io)$/);
+
+            if (!match || !match.length) {
+                continue;
+            }
+            const newDomainName = match[1].replace(" (http)", "");
+            const newDomainUrl = match[2];
+
+            const tunnelIndex = tunnels.findIndex(tunnel => tunnel.name === newDomainName);
+            const doesTunnelExist = tunnelIndex !== -1;
+
+            // If tunnel name exists, override and update the url.
+            if (doesTunnelExist) {
+                tunnels[tunnelIndex] = {
+                    name: newDomainName,
+                    url: newDomainUrl
+                };
+                continue;
+            }
+            tunnels.push({name: newDomainName, url: newDomainUrl});
+        }
+
+        if (!tunnels || !tunnels.length) {
+            console.log("No tunnels found.");
+            return;
+        }
+        publishers.forEach(publisher => publisher.publish(tunnels));
+        return;
     });
 };
 
-setTimeout(publishNewDomain, 3000);
+setTimeout(() => {
+    buildRequestedPublishers();
+    publishTunnelDomains();
+}, 3000);

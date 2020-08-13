@@ -1,4 +1,5 @@
 import {Config} from "../interfaces/config.interface";
+import {NgrokTunnel} from "../interfaces/ngrok-tunnel.interface";
 
 export abstract class GenericPublisher {
 
@@ -8,5 +9,5 @@ export abstract class GenericPublisher {
         this.config = config;
     }
 
-    abstract publish(message: string): void;
+    abstract publish(tunnels: NgrokTunnel[]): void;
 }
