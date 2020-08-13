@@ -1,5 +1,6 @@
 import {GenericPublisher} from "./generic-publisher";
 import {Config} from "../interfaces/config.interface";
+import {NgrokTunnel} from "../interfaces/ngrok-tunnel.interface";
 
 export class ConsolePublisher extends GenericPublisher {
 
@@ -7,7 +8,9 @@ export class ConsolePublisher extends GenericPublisher {
         super(config);
     }
 
-    publish(domain: string) {
-        console.log(domain);
+    publish(tunnels: NgrokTunnel[]) {
+        for (const tunnel of tunnels) {
+            console.log(`Name: ${tunnel.name}, Url: ${tunnel.url}`);
+        }
     }
 }

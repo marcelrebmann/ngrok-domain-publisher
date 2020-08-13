@@ -10,6 +10,11 @@ This means after each restart we need to find out the new URL by looking it up e
 This script was written to enable automatic publishing of the URL without any interaction. 
 
 ## How to start?
+* Download or clone the project:
+  ```
+  curl -LOk https://github.com/marcelrebmann/ngrok-domain-publisher/archive/v0.1.X.zip
+  unzip v0.1.X.zip
+  ```
 * Make sure to have Node.js (v10.x) and NPM installed.
 * Install dependencies via `npm install`
 * Find out in which directory your ngrok.log file is and copy the path.
@@ -63,4 +68,4 @@ WantedBy=multi-user.target
 ```
 
 ## Contributing
-Feel free to contribute add Pull Requests with new Handlers/Services which could be useful for others!
+Feel free to contribute and add Pull Requests with new Publishers which could be useful for others!

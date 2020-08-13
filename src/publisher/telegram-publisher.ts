@@ -1,11 +1,12 @@
 import {Config} from "../interfaces/config.interface";
 import * as TelegramBot from "node-telegram-bot-api";
 import {GenericPublisher} from "./generic-publisher";
+import {NgrokTunnel} from "../interfaces/ngrok-tunnel.interface";
 
 export class TelegramPublisher extends GenericPublisher {
 
-    bot: TelegramBot;
-    chatId: number;
+    private bot: TelegramBot;
+    private readonly chatId: number;
 
     constructor(config: Config) {
         super(config);
@@ -13,7 +14,12 @@ export class TelegramPublisher extends GenericPublisher {
         this.chatId = parseInt(config.publishers.chatId);
     }
 
-    publish(url: string) {
-        this.bot.sendMessage(this.chatId, "<b>URL changed!</b>\n\nPlease update your Remote URL in the App:\n" + url, {parse_mode: "HTML"});
+    publish(domains: NgrokTunnel[]): void {
+        let domainInfo = "";
+
+        for (const domain of domains) {
+            domainInfo += `${domain.name}: ${domain.url}\n`;
+        }
+        this.bot.sendMessage(this.chatId, "<b>Tunnel URLs changed!</b>\nUpdated URLs:\n" + domainInfo, {parse_mode: "HTML"});
     }
 }

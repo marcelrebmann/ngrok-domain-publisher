@@ -1,5 +1,5 @@
 {
-  "logFileDir": "/var/log/ngrok.log",
+  "logFileDir": "/Users/marcel/git/ngrok-domain-publisher/ngrok.log",
   "publishers": {
     "telegramToken": "",
     "chatId": ""

@@ -23,7 +23,7 @@
     "node-telegram-bot-api": "^0.30.0"
   },
   "devDependencies": {
-    "@types/node": "^10.12.0",
+    "@types/node": "^10.17.28",
     "@types/node-telegram-bot-api": "^0.30.4",
     "tslint": "4.3.1",
     "typescript": "3.1.3"
