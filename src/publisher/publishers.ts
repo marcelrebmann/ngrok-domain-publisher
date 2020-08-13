@@ -1,3 +1,4 @@
 export enum Publishers {
-    Telegram = "telegram"
+    Telegram = "telegram",
+    Stdout = "stdout"
 }

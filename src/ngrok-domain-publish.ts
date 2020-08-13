@@ -6,19 +6,34 @@ import {GenericPublisher} from "./publisher/generic-publisher";
 import {NgrokTunnel} from "./interfaces/ngrok-tunnel.interface";
 
 const exec = require("child_process").exec;
-const handler = process.argv[3];
+const requestedHandlers = process.argv[3];
 const CONFIG: Config = require("../config.json");
 const LOG_DIR = CONFIG.logFileDir;
 
-let publisher: GenericPublisher;
+const publishers: GenericPublisher[] = [];
 
-switch (handler) {
-    case Publishers.Telegram:
-        publisher = new TelegramPublisher(CONFIG);
-        break;
-    default:
-        publisher = new ConsolePublisher(CONFIG);
-}
+const buildRequestedPublishers = () => {
+    if (!requestedHandlers) {
+        publishers.push(createPublisher());
+        return;
+    }
+    const handlers = requestedHandlers.split(",");
+
+    for (const handler of handlers) {
+        publishers.push(createPublisher(handler));
+    }
+};
+
+const createPublisher: (key?: string) => GenericPublisher = (key: string) => {
+    switch (key) {
+        case Publishers.Telegram:
+            return new TelegramPublisher(CONFIG);
+        case Publishers.Stdout:
+            return new ConsolePublisher(CONFIG);
+        default:
+            return new ConsolePublisher(CONFIG);
+    }
+};
 
 const publishTunnelDomains = () => {
     exec(`cat ${LOG_DIR} | grep -Po 'obj=tunnels name=(.+) addr=.+ url=(https?:\/\/.+\.ngrok\.io)$'`, (error: Error, stdout: string) => {
@@ -30,12 +45,11 @@ const publishTunnelDomains = () => {
             console.log("No tunnels found.");
             return;
         }
-        console.log(stdout);
         const lines = stdout.split(/\r?\n/);
         const tunnels: NgrokTunnel[] = [];
 
         for (const line of lines) {
-            const match = line.match(/name="?([^"]+)"? .+ url=https?:\/\/(.+\.ngrok\.io)/);
+            const match = line.match(/name="?([^"]+)"? .+ url=https?:\/\/(.+\.ngrok\.io)$/);
 
             if (!match || !match.length) {
                 continue;
@@ -44,7 +58,7 @@ const publishTunnelDomains = () => {
             const newDomainUrl = match[2];
 
             if (tunnels.find(domain => domain.url === newDomainUrl)) {
-                return;
+                continue;
             }
             tunnels.push({name: newDomainName, url: newDomainUrl});
         }
@@ -53,9 +67,12 @@ const publishTunnelDomains = () => {
             console.log("No tunnels found.");
             return;
         }
-        publisher.publish(tunnels);
+        publishers.forEach(publisher => publisher.publish(tunnels));
         return;
     });
 };
 
-setTimeout(publishTunnelDomains, 3000);
+setTimeout(() => {
+    buildRequestedPublishers();
+    publishTunnelDomains();
+}, 3000);

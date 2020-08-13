@@ -10,7 +10,7 @@ export class ConsolePublisher extends GenericPublisher {
 
     publish(tunnels: NgrokTunnel[]) {
         for (const tunnel of tunnels) {
-            console.log(`Name: ${tunnel.name}, Url: ${tunnel.url}`);
+            console.log(`Name: ${tunnel.name}, URL: ${tunnel.url}`);
         }
     }
 }
