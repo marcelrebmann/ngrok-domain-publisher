@@ -1,6 +1,6 @@
 {
   "name": "ngrok-domain-publisher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Automatically find and publish the URL of a running Ngrok instance after every restart.",
   "homepage": "",
   "author": {

@@ -1,3 +1,6 @@
+[![Generic badge](https://img.shields.io/badge/ngrok2.x-supported-green.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/ngrok1.x-unsupported-red.svg)](https://shields.io/)
+
 # ngrok-domain-publisher
 
 >A simple script to find and publish the new URL under which your Ngrok tunnels are accessible.<br>
