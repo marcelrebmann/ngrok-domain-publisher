@@ -97,12 +97,12 @@ Feel free to contribute and add Pull Requests with new Publishers which could be
 
 ## Release Notes
 
-###v0.2.0
+### v0.2.0
 - Added support for detecting url changes of multiple ngrok tunnels.
 - Added support for using multiple publishers.
 - Added compatibility for ngrok2.x
 - Dropped support for deprecated ngrok v1
 - Minor improvements for documentation
 
-###v0.1.0
+### v0.1.0
 - Initial Release.
