@@ -39,17 +39,27 @@ const createPublisher: (key?: string) => GenericPublisher = (key: string) => {
     }
 };
 
-const loadDefinedDomains: () => string[] = () => {
+const loadDefinedTunnels: () => string[] = () => {
     const yamlFileContents = fs.readFileSync(NGROK_CONFIG, "utf-8");
     const ngrokConfig: NgrokConfig = JsYaml.safeLoad(yamlFileContents) as NgrokConfig;
+    const tunnels = [];
+
     if (!ngrokConfig || !ngrokConfig.tunnels) {
         return [];
     }
-    return Object.keys(ngrokConfig.tunnels);
+    const definedTunnelKeys = Object.keys(ngrokConfig.tunnels);
+
+    for (const key of definedTunnelKeys) {
+        tunnels.push(key);
+        if (ngrokConfig.tunnels.proto === "http" && !ngrokConfig.tunnels.bind_tls) {
+            tunnels.push(`${key} (http)`);
+        }
+    }
+    return tunnels;
 };
 
 const publishTunnelDomains = () => {
-    const definedDomains = loadDefinedDomains();
+    const definedTunnelNames = loadDefinedTunnels();
     exec(`cat ${LOG_FILE} | grep -Eo 'msg=\"started tunnel\" obj=tunnels name=(.+) addr=.+ url=((https?|tcp):\/\/.+\.ngrok\.io(:[0-9]+)?)$'`, (error: Error, stdout: string) => {
         if (error) {
             console.log(error);
@@ -71,7 +81,7 @@ const publishTunnelDomains = () => {
             const newDomainName = match[1];
             const newDomainUrl = match[2];
 
-            const isDomainDefined = definedDomains.indexOf(newDomainName) !== -1;
+            const isDomainDefined = definedTunnelNames.indexOf(newDomainName) !== -1;
 
             if (!isDomainDefined) {
                 continue;
