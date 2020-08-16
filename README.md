@@ -26,7 +26,7 @@ This script was written to enable automatic publishing of the URL without any in
 * Make sure to have Node.js (>= v10.x) and NPM installed.
 * Install dependencies via `npm install`
 * Find out in which directory your ngrok.log file is and copy the path.
-* Fulfill the entries in `config.json` (especially the path to the log file)
+* Fulfill the entries in `config.json` (especially the path to the log file and to your ngrok config .yml file)
 * Build the project via `npm run build`
 * To run the script via node, execute `./dist/ngrok-domain-publish.js`
 
@@ -96,6 +96,11 @@ Feel free to contribute and add Pull Requests with new Publishers which could be
 
 
 ## Release Notes
+
+### v0.2.1
+- Added support for TLS tunnels.
+- Fixes distinction of http/https versions of tunnels for publishing
+- Uses ngrok config file (YAML) to search for defined tunnels solely
 
 ### v0.2.0
 - Added support for detecting url changes of multiple ngrok tunnels.

@@ -1,5 +1,6 @@
 export interface Config {
-    logFileDir: string;
+    logFilePath: string;
+    ngrokConfigPath: string;
     publishers: PublisherConfig;
 }
 
