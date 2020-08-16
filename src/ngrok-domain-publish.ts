@@ -36,7 +36,7 @@ const createPublisher: (key?: string) => GenericPublisher = (key: string) => {
 };
 
 const publishTunnelDomains = () => {
-    exec(`cat ${LOG_DIR} | grep -Po 'msg=\"started tunnel\" obj=tunnels name=(.+) addr=.+ url=(https?:\/\/.+\.ngrok\.io)$'`, (error: Error, stdout: string) => {
+    exec(`cat ${LOG_DIR} | grep -Po 'msg=\"started tunnel\" obj=tunnels name=(.+) addr=.+ url=((https?|tcp):\/\/.+\.ngrok\.io(:\d+)?)$'`, (error: Error, stdout: string) => {
         if (error) {
             console.log(error);
             return;
@@ -49,12 +49,12 @@ const publishTunnelDomains = () => {
         const tunnels: NgrokTunnel[] = [];
 
         for (const line of lines) {
-            const match = line.match(/name="?([^"]+)"? .+ url=https?:\/\/(.+\.ngrok\.io)$/);
+            const match = line.match(/name="?([^"]+)"? .+ url=((https?|tcp):\/\/.+\.ngrok\.io(:\d+)?)$/);
 
             if (!match || !match.length) {
                 continue;
             }
-            const newDomainName = match[1].replace(" (http)", "");
+            const newDomainName = match[1];
             const newDomainUrl = match[2];
 
             const tunnelIndex = tunnels.findIndex(tunnel => tunnel.name === newDomainName);
