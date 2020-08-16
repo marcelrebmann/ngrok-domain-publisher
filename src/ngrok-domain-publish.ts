@@ -4,11 +4,15 @@ import {Publishers} from "./publisher/publishers";
 import {ConsolePublisher} from "./publisher/console-publisher";
 import {GenericPublisher} from "./publisher/generic-publisher";
 import {NgrokTunnel} from "./interfaces/ngrok-tunnel.interface";
+import * as JsYaml from "js-yaml";
+import * as fs from "fs";
+import {NgrokConfig} from "./interfaces/ngrok-config.interface";
 
 const exec = require("child_process").exec;
 const requestedHandlers = process.argv[3];
 const CONFIG: Config = require("../config.json");
-const LOG_DIR = CONFIG.logFileDir;
+const LOG_FILE = CONFIG.logFilePath;
+const NGROK_CONFIG = CONFIG.ngrokConfigPath;
 
 const publishers: GenericPublisher[] = [];
 
@@ -35,8 +39,17 @@ const createPublisher: (key?: string) => GenericPublisher = (key: string) => {
     }
 };
 
+const loadDefinedDomains: () => string[] = () => {
+    const ngrokConfig: NgrokConfig = JsYaml.safeLoad(NGROK_CONFIG) as NgrokConfig;
+    if (!ngrokConfig || !ngrokConfig.tunnels) {
+        return [];
+    }
+    return Object.keys(ngrokConfig.tunnels);
+};
+
 const publishTunnelDomains = () => {
-    exec(`cat ${LOG_DIR} | grep -Eo 'msg=\"started tunnel\" obj=tunnels name=(.+) addr=.+ url=((https?|tcp):\/\/.+\.ngrok\.io(:[0-9]+)?)$'`, (error: Error, stdout: string) => {
+    const definedDomains = loadDefinedDomains();
+    exec(`cat ${LOG_FILE} | grep -Eo 'msg=\"started tunnel\" obj=tunnels name=(.+) addr=.+ url=((https?|tcp):\/\/.+\.ngrok\.io(:[0-9]+)?)$'`, (error: Error, stdout: string) => {
         if (error) {
             console.log(error);
             return;
@@ -56,6 +69,12 @@ const publishTunnelDomains = () => {
             }
             const newDomainName = match[1];
             const newDomainUrl = match[2];
+
+            const isDomainDefined = definedDomains.indexOf(newDomainName) !== -1;
+
+            if (!isDomainDefined) {
+                continue;
+            }
 
             const tunnelIndex = tunnels.findIndex(tunnel => tunnel.name === newDomainName);
             const doesTunnelExist = tunnelIndex !== -1;
@@ -81,6 +100,14 @@ const publishTunnelDomains = () => {
 };
 
 setTimeout(() => {
+    if (!fs.existsSync(NGROK_CONFIG)) {
+        console.log("Ngrok config file for given path does not exist!");
+        return;
+    }
+    if (!fs.existsSync(LOG_FILE)) {
+        console.log("Log file for given path does not exist!");
+        return;
+    }
     buildRequestedPublishers();
     publishTunnelDomains();
 }, 3000);

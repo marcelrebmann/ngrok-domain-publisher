@@ -1,5 +1,6 @@
 {
-  "logFileDir": "/var/log/ngrok.log",
+  "logFilePath": "/var/log/ngrok.log",
+  "ngrokConfigPath": "~/.ngrok2/ngrok.yml",
   "publishers": {
     "telegramToken": "",
     "chatId": ""
