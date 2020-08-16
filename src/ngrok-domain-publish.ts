@@ -51,7 +51,7 @@ const loadDefinedTunnels: () => string[] = () => {
 
     for (const key of definedTunnelKeys) {
         tunnels.push(key);
-        if (ngrokConfig.tunnels.proto === "http" && !ngrokConfig.tunnels.bind_tls) {
+        if (ngrokConfig.tunnels[key].proto === "http" && !ngrokConfig.tunnels[key].bind_tls) {
             tunnels.push(`${key} (http)`);
         }
     }
