@@ -40,7 +40,8 @@ const createPublisher: (key?: string) => GenericPublisher = (key: string) => {
 };
 
 const loadDefinedDomains: () => string[] = () => {
-    const ngrokConfig: NgrokConfig = JsYaml.safeLoad(NGROK_CONFIG) as NgrokConfig;
+    const yamlFileContents = fs.readFileSync(NGROK_CONFIG, "utf-8");
+    const ngrokConfig: NgrokConfig = JsYaml.safeLoad(yamlFileContents) as NgrokConfig;
     if (!ngrokConfig || !ngrokConfig.tunnels) {
         return [];
     }
